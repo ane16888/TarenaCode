@@ -1,2 +1,4 @@
 /venv/
 /day**/__init__.py
+/.idea/
+/.git/
