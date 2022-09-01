@@ -55,16 +55,16 @@ class StudentManagerController:
             for c in range(i+1,len(self.__stu_list)):
                 if self.__stu_list[i].score < self.__stu_list[c].score:
                     self.__stu_list[i], self.__stu_list[c]=self.__stu_list[c], self.__stu_list[i]
-#
-# student01 = StudentModel("张三",56,89)
-# student02 = StudentModel("李四",16,100)
-# student03 = StudentModel("李5",16,1020)
-# controller = StudentManagerController()
-# controller.add_student(student01)
-# controller.add_student(student02)
-# controller.add_student(student03)
-# # print(controller.update_student(StudentModel("张8",100,89,1003)))
-# # print(controller.remove_student(1001))
-# controller.order_by_score()
-# for i in controller.stu_list:
-#     print(i.id,i.name)
+
+student01 = StudentModel("张三",56,89)
+student02 = StudentModel("李四",16,100)
+student03 = StudentModel("李5",16,1020)
+controller = StudentManagerController()
+controller.add_student(student01)
+controller.add_student(student02)
+controller.add_student(student03)
+# print(controller.update_student(StudentModel("张8",100,89,1003)))
+# print(controller.remove_student(1001))
+controller.order_by_score()
+for i in controller.stu_list:
+    print(i.id,i.name)
