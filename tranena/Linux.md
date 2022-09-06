@@ -1090,7 +1090,7 @@ print(q)  # ['is']
 | 匹配位置 | `^`   $   \b   \B                                      |
 | 其他     | `|`    ` ()`      ` \ `                                |
 
-### 2.2匹配规则
+### 2.2 匹配规则
 
 #### 2.2.1 特殊字符匹配
 
@@ -1183,7 +1183,7 @@ Out: 'ab'
 2. 排他性,除了目标字符串之外尽可能少的匹配其他内容.
 3. 全面性,尽可能考虑到目标字符串的所有情况,不遗漏.
 
-### 2.3 Python re模块使用
+### 2.3 re模块使用
 
 #### 2.3.1 基础函数使用
 
@@ -1282,28 +1282,39 @@ re.fullmatch(pattern,string)
 返回值：匹配到返回match obj，没有匹配到返回None
 ```
 
-#### 2.4.3 match对象使用
+#### 2.3.3 match对象使用
+
+- match对象属性
+  1. match_obj.pos   目标字符串开始位置
+  2. match_obj.endpos   目标字符串结束位置
+  3. match_obj.re    正则表达式对象
+  4. match_obj.string    目标字符串
+  5. match_obj.lastgroup    最后一组的名字
+  6. match_obj.lastindex    最后一组是第几组
 
 
-- span()  获取匹配内容的起止位置
+- match对象方法
 
-- groupdict()  获取捕获组字典，组名为键，对应内容为值
+  1. match_obj.span()   获取匹配内容的起止位置
 
-- group(n = 0)
+  2. match_obj.start()    获取匹配内容的开始位置
 
-  功能：获取match对象匹配内容
+  3. match_obj.end()     获取匹配内容的结束位置
 
-  参数：默认为0表示获取整个match对象内容，如果是序列号或者组名则表示获取对应子组内容
+  4. match_obj.groupdict()  获取捕获组字典，组名为键，对应内容为值
 
-  返回值：匹配字符串
+  5. group(n)
+
+     功能：获取match对象匹配内容
+
+     参数：默认为0表示获取整个match对象内容，
+                如果是序列号或者组名则表示获取对应子组内容。
+
+     返回值：匹配字符串
 
 ![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/re1.png)
 
-
-
 #### 2.4.4 flags参数扩展
-
-
 
 * 作用函数：re模块调用的匹配函数。如：re.findall,re.search....
 
@@ -1322,8 +1333,6 @@ re.fullmatch(pattern,string)
   ```
 
 >  注意：同时使用多个flag，可以用竖线连接   flags = re.I | re.A
-
-
 
 ## 3. 数据库
 
@@ -1483,7 +1492,7 @@ re.fullmatch(pattern,string)
 >create database 库名 [character set utf8];
 
 ```sql
-e.g. 创建stu数据库，编码为utf8
+-- 创建stu数据库，编码为utf8
 create database stu character set utf8;
 create database stu charset=utf8;
 ```
@@ -1892,11 +1901,11 @@ select * from class_1 where sex='m' UNION ALL select * from class_1 where age > 
 
 
     2. where字句中，此时select查询到的内容作为外层查询的条件值
-
+    
     ```sql
      	select *  from class_1 where age = (select age from class_1 where name='Tom');
     ```
-
+    
     > 注意：
     >
     > 1. 子句结果作为一个值使用时，返回的结果需要一个明确值，不能是多行或者多列。
