@@ -1622,64 +1622,67 @@ delete from class_1 where name='Abby';
   >
   > 1. datetime ：以系统时间存储
   > 2. timestamp ：以标准时间存储但查看时转换为系统时区，所以表现形式和datetime相同
-
-```sql
-create table marathon (id int primary key auto_increment,
-                       athlete varchar(32),
-                       birthday date,
-                       registration_time datetime,
-                       performance time);
-```
-
+  
+  ```sql
+  create table marathon (id int primary key auto_increment,
+                         athlete varchar(32),
+                         birthday date,
+                         registration_time datetime,
+                         performance time);
+  ```
+  
+  ```sql
+  insert into marathon values(1,"曹操","1990-2-8",'2020/6/8 15:17:13',"2:18:26")
+  ```
+  
 * 日期时间函数
 
   * now()  返回服务器当前日期时间,格式对应datetime类型
   * curdate() 返回当前日期，格式对应date类型
   * curtime() 返回当前时间，格式对应time类型
 
+* 时间运算
+
+  - 语法格式：select * from 表名 where 字段名 运算符(时间-interval 时间间隔)
+
+  - 时间间隔单位：2 hour | 1 minute | 2 second | 2 year | 3 month | 1 day
+
+  - 注意：只支持时间的加法和减法
+
+    ```sql
+    -- 查找注册时间在一周以内的记录
+    select * from marathon where registration_time>(now()-interval 7 day)
+    ```
+
 * 时间操作
 
-  时间类型数据可以进行比较和排序等操作，在写时间字符串时尽量按照标准格式书写。
+  时间类型数据可以进行比较和排序等操作，写时间字符串时尽量按照标准格式书写。
 
-```sql
-select * from marathon where birthday>='2000-01-01';
-select * from marathon where birthday>="2000-07-01" and performance<="2:30:00";
-```
+  ```sql
+  select * from marathon where birthday>='2000-01-01';
+  select * from marathon where birthday>="2000-07-01" and performance<="2:30:00";
+  ```
 
-### 3.7 高级查询语句
+### 3.4 高级查询语句
 
 * 模糊查询和正则查询
 
   1. 模糊查询
 
      LIKE用于在where子句中进行模糊查询，SQL LIKE 子句中使用百分号` %`来表示任意0个或多个字符，下划线`_`表示任意一个字符。
-
-  ```sql
-  SELECT field1, field2,...fieldN 
-  FROM table_name
-  WHERE field1 LIKE condition1
-  ```
-
-  ```sql
-  e.g. 
-  mysql> select * from class_1 where name like 'A%';
-  ```
-
+   
+     ```sql
+     select * from class_1 where name like 'A%_';
+     ```
+  
   2. 正则查询
 
      mysql中对正则表达式的支持有限，只支持部分正则元字符:
-
-  ```sql
-  SELECT field1, field2,...fieldN 
-  FROM table_name
-  WHERE field1 REGEXP condition1
-  ```
-
-  ```sql
-  e.g. 
-  select * from class_1 where name regexp '^B.+';
-  ```
-
+     
+     ```sql
+     select * from class_1 where name regexp '^B.+';
+   ```
+  
 * as 用法
 
   在sql语句中as用于给字段或者表重命名
@@ -1691,28 +1694,22 @@ select * from marathon where birthday>="2000-07-01" and performance<="2:30:00";
 
 * 排序
 
-  ORDER BY 子句来设定你想按哪个字段哪种方式来进行排序，再返回搜索结果。
-
-  使用 ORDER BY 子句将查询数据排序后再返回数据：
-
-  ```sql
-  SELECT field1, field2,...fieldN from table_name1 where field1
-  ORDER BY field1 [ASC [DESC]]
-  ```
+  ORDER BY 子句用来设定按哪个字段哪种方式来进行排序，再返回搜索结果。
 
   默认情况ASC表示升序，DESC表示降序
 
   ```sql
-  select * from class_1 where sex='m' order by age desc;
-  ```
-
-  复合排序：对多个字段排序，即当第一排序项相同时按照第二排序项排序
-
+  select * from class_1 
+  where sex='m' 
+  order by age desc;
+```
+  
+复合排序：对多个字段排序，即当第一排序项相同时按照第二排序项排序
+  
   ```sql
-  select * from class_1 order by score desc,age;
+  select * from class_1 
+order by score desc,age;
   ```
-
-
 
 * 限制
 
@@ -1743,12 +1740,12 @@ select * from marathon where birthday>="2000-07-01" and performance<="2:30:00";
   [WHERE conditions];
   ```
 
-  默认UNION后卫 DISTINCT表示删除结果集中重复的数据。如果使用ALL则返回所有结果集，	包含重复数据。
-
-```sql
-select * from class_1 where sex='m' UNION ALL select * from class_1 where age > 9;
-```
-
+  默认UNION后面DISTINCT表示删除结果集中重复的数据。如果使用ALL则返回所有结果集，包含重复数据。
+  
+  ```sql
+  select * from class_1 where sex='m' UNION ALL select * from class_1 where age > 9;
+  ```
+  
 * 子查询
 
   * 定义 ： 当一个select语句中包含另一个select 查询语句，则称之为有子查询的语句
@@ -1757,52 +1754,42 @@ select * from class_1 where sex='m' UNION ALL select * from class_1 where age > 
 
     1. from 之后 ，此时子查询的内容作为一个新的表内容，再进行外层select查询
 
-    ```sql
-    select name from (select * from class_1 where sex='m') as s where s.score > 90;
-    ```
+       ```sql
+       select name from (select * from class_1 where sex='m') as s where s.score > 90;
+       ```
 
-    >注意：  需要将子查询结果集重命名一下，方便where子句中的引用操作
-
-
-    2. where字句中，此时select查询到的内容作为外层查询的条件值
+       注意：  需要将子查询结果集重命名一下，方便where子句中的引用操作
     
-    ```sql
-     	select *  from class_1 where age = (select age from class_1 where name='Tom');
-    ```
+    2.  where字句中，此时select查询到的内容作为外层查询的条件值
     
-    > 注意：
-    >
-    > 1. 子句结果作为一个值使用时，返回的结果需要一个明确值，不能是多行或者多列。
-    > 2. 如果子句结果作为一个集合使用，即where子句中是in操作，则结果可以是一个字段的多个记录。
+       ```sql
+       select *  from class_1 where age = (select age from class_1 where name='Tom')
+       注意：
+       1. 子句结果作为一个值使用时，返回的结果需要一个明确值。
+       2. 子句结果作为一个集合使用，即where子句中是in操作，则结果可以是一个字段的多个记录。
+       ```
 
 * 查询过程
 
-通过之前的学习看到，一个完整的select语句内容是很丰富的。下面看一下select的执行过程：
+  一个完整的select语句内容是很丰富的。下面看一下select的执行过程：
 
-```sql
-(5)SELECT DISTINCT <select_list>                     
+  ```sql
+  (5)SELECT DISTINCT <select_list>                     
+  (1)FROM <left_table> <join_type> JOIN <right_table> ON <on_predicate>
+  (2)WHERE <where_predicate>
+  (3)GROUP BY <group_by_specification>
+  (4)HAVING <having_predicate>
+  (6)ORDER BY <order_by_list>
+  (7)LIMIT <limit_number>
+  ```
 
-(1)FROM <left_table> <join_type> JOIN <right_table> ON <on_predicate>
+### 3.5 聚合操作
 
-(2)WHERE <where_predicate>
+​	聚合操作指的是在数据查找基础上对数据的进一步整理筛选行为，
 
-(3)GROUP BY <group_by_specification>
+​	实际上聚合操作也属于数据的查询筛选范围。
 
-(4)HAVING <having_predicate>
-
-(6)ORDER BY <order_by_list>
-
-(7)LIMIT <limit_number>
-```
-
-
-
-### 3.8 聚合操作
-
-聚合操作指的是在数据查找基础上对数据的进一步整理筛选行为，实际上聚合操作也属于数据的查询筛选范围。
-
-
-#### 3.8.1 聚合函数
+#### 3.5.1 聚合函数
 
 | 方法          | 功能                 |
 | ------------- | -------------------- |
@@ -1811,7 +1798,6 @@ select * from class_1 where sex='m' UNION ALL select * from class_1 where age > 
 | min(字段名)   | 该字段的最小值       |
 | sum(字段名)   | 该字段所有记录的和   |
 | count(字段名) | 统计该字段记录的个数 |
-|               |                      |
 
 eg1 : 找出表中的最大攻击力的值？
 
@@ -1833,103 +1819,93 @@ select count(*) from sanguo where attack > 200;
 
 > 注意： 此时select 后只能写聚合函数，无法查找其他字段。
 
-
-
-#### 3.8.2 聚合分组
+#### 3.5.2 聚合分组
 
 - **group by**
 
-给查询的结果进行分组
+  给查询的结果进行分组
 
-e.g.  : 计算每个国家的平均攻击力
+  e.g.  : 计算每个国家的平均攻击力
 
-```mysql
-select country,avg(attack) from sanguo 
-group by country;
-```
+  ```sql
+  select country,avg(attack) from sanguo 
+  group by country;
+  ```
 
-e.g. :  对多个字段创建索引，此时多个字段都相同时为一组
+  e.g. :  对多个字段创建索引，此时多个字段都相同时为一组
 
-```mysql
-select age,sex,count(*) from class1 group by age,sex;
-```
+  ```sql
+  select age,sex,count(*) from class1 group by age,sex;
+  ```
 
 
-e.g. : 所有国家的男英雄中 英雄数量最多的前2名的 国家名称及英雄数量
+  e.g. : 所有国家的男英雄中 英雄数量最多的前2名的 国家名称及英雄数量
 
-```mysql
-select country,count(id) as number from sanguo 
-where gender='M' group by country
-order by number DESC
-limit 2;
-```
+  ```sql
+  select country,count(id) as number from sanguo 
+  where gender='M' group by country
+  order by number DESC
+  limit 2;
+  ```
 
 >  注意： 使用分组时select 后的字段为group by分组的字段和聚合函数，不能包含其他内容。group by也可以同时依照多个字段分组，如group by A，B 此时必须A,B两个字段值均相同才算一组。
 
-
-
-#### 3.8.3 聚合筛选
+#### 3.5.3 聚合筛选
 
 - **having语句**
 
-对分组聚合后的结果进行进一步筛选
+  对分组聚合后的结果进行进一步筛选
 
-```mysql
-eg1 : 找出平均攻击力大于105的国家的前2名,显示国家名称和平均攻击力
-
-select country,avg(attack) from sanguo 
-group by country
-having avg(attack)>105
-order by avg(attack) DESC
-limit 2;
-```
+  ```sql
+  eg1 : 找出平均攻击力大于105的国家的前2名,显示国家名称和平均攻击力
+  
+  select country,avg(attack) from sanguo 
+  group by country
+  having avg(attack)>105
+  order by avg(attack) DESC
+  limit 2;
+  ```
 
 > 注意
 >
 > 1. having语句必须与group by联合使用。
 > 2. having语句存在弥补了where关键字不能与聚合函数联合使用的不足,where只能操作表中实际存在的字段。
 
-
-
-#### 3.8.4 去重语句
+#### 3.5.4 去重语句
 
 - **distinct语句**
 
-不显示字段重复值
+  不显示字段重复值
 
-```mysql
-eg1 : 表中都有哪些国家
-  select distinct name,country from sanguo;
-eg2 : 计算一共有多少个国家
-  select count(distinct country) from sanguo;
-```
+  ```sql
+  eg1 : 表中都有哪些国家
+    select distinct name,country from sanguo;
+  eg2 : 计算一共有多少个国家
+    select count(distinct country) from sanguo;
+  ```
 
 > 注意: distinct和from之间所有字段都相同才会去重
 
-
-
-#### 3.8.5 聚合运算
+#### 3.5.5 聚合运算
 
 - **查询表记录时做数学运算**
 
-运算符 ： +  -  *  /  %  
+  运算符 ： +  -  *  /  %  
 
-```mysql
-eg1: 查询时显示攻击力翻倍
-  select name,attack*2 from sanguo;
-eg2: 更新蜀国所有英雄攻击力 * 2
-  update sanguo set attack=attack*2 where country='蜀国';
-```
+  ```sql
+  eg1: 查询时显示攻击力翻倍
+    select name,attack*2 from sanguo;
+  eg2: 更新蜀国所有英雄攻击力 * 2
+    update sanguo set attack=attack*2 where country='蜀国';
+  ```
 
+### 3.6 索引操作
 
-
-### 3.9 索引操作
-
-#### 3.9.1 概述
+#### 3.6.1 概述
 
 - **定义**
 
-索引是对数据库表中一列或多列的值进行排序的一种结构，使用索引可快速访问数据库表中的特定信息。
+  索引是对数据库表中一列或多列的值进行排序的一种结构，使用索引可快速访问数据库表中的特定信息。
 
 - **优缺点**
   - 优点 ： 加快数据检索速度,提高查找效率
@@ -1942,7 +1918,7 @@ eg2: 更新蜀国所有英雄攻击力 * 2
 > 2. 对于数据量很少的表或者经常进行写操作而不是查询操作的表不适合创建索引
 
 
-#### 3.9.2 索引分类
+#### 3.6.2 索引分类
 
 *  普通(MUL) 
 
@@ -1954,72 +1930,65 @@ eg2: 更新蜀国所有英雄攻击力 * 2
 
 * 主键索引（PRI）
 
-> 一个表中只能有一个主键字段, 主键字段不允许重复,且不能为NULL，KEY标志为PRI。通常设置记录编号字段id,能唯一锁定一条记录
+> 一个表中只能有一个主键字段，主键字段不允许重复，且不能为NULL，KEY标志为PRI。通常设置记录编号字段id，能唯一锁定一条记录。
 
-
-
-#### 3.9.3 索引创建
+#### 3.6.3 索引创建
 
 * 创建表时直接创建索引
 
-```mysql
-create table 表名(
-字段名 数据类型，
-字段名 数据类型，
-index 索引名(字段名),
-index 索引名(字段名),
-unique 索引名(字段名)
-);
-```
+  ```sql
+  create table 表名(
+  字段名 数据类型，
+  字段名 数据类型，
+  index 索引名(字段名),
+  unique 索引名(字段名)
+  );
+  ```
 
 * 在已有表中创建索引：
 
-```mysql
-create [unique] index 索引名 on 表名(字段名);
-```
+  ```sql
+  create [unique] index 索引名 on 表名(字段名);
+  ```
 
-```sql
-e.g.
-create unique index name_index on cls(name);
-```
-
-
+  ```sql
+  create unique index name_index on cls(name);
+  ```
 
 - 主键索引添加
 
- ```sql
- alter table 表名 add primary key(id);
- ```
-
+  ```sql
+   -- 已有表添加主键索引
+   alter table 表名 add primary key(id);
+   -- 创建复合主键
+   primary key(uid,pid)
+  ```
 
 - 查看索引
 
-```mysql
-1、desc 表名;  --> KEY标志为：MUL 、UNI。
-2、show index from 表名;
-```
+  ```sql
+  1、desc 表名;  --> KEY标志为：MUL 、UNI。
+  2、show index from 表名;
+  ```
 
 - 删除索引
 
-```mysql
-drop index 索引名 on 表名;
-alter table 表名 drop primary key;  # 删除主键
-```
+  ```sql
+  drop index 索引名 on 表名;
+  alter table 表名 drop primary key;  # 删除主键
+  ```
+
+- 扩展： 借助性能查看选项去查看索引性能
+
+  ```sql
+  set  profiling = 1； 打开功能 （项目上线一般不打开）
+  show profiles  查看语句执行信息
+  ```
 
 
+### 3.7 外键约束和表关联关系
 
-* 扩展： 借助性能查看选项去查看索引性能
-
-```sql
-set  profiling = 1； 打开功能 （项目上线一般不打开）
-
-show profiles  查看语句执行信息
-```
-
-
-### 3.10 外键约束和表关联关系
-
-#### 3.10.1 外键约束
+#### 3.7.1 外键约束
 
 * 约束 : 约束是一种限制，它通过对表的行或列的数据做出限制，来确保表的数据的完整性、唯一性
 * foreign key 功能 : 建立表与表之间的某种约束的关系，由于这种关系的存在，能够让表与表之间的数据，更加的完整，关连性更强，为了具体说明创建如下部门表和人员表。
