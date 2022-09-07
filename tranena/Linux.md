@@ -1173,9 +1173,7 @@ Out: 'ab'
 
   3、子组序列号一般从外到内，从左到右计数
 
-![分组](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/re.png)
-
-
+![分组](./img//re.png)
 
 #### 2.3.4 正则表达式匹配原则
 
@@ -1312,8 +1310,6 @@ re.fullmatch(pattern,string)
 
      返回值：匹配字符串
 
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/re1.png)
-
 #### 2.4.4 flags参数扩展
 
 * 作用函数：re模块调用的匹配函数。如：re.findall,re.search....
@@ -1336,212 +1332,88 @@ re.fullmatch(pattern,string)
 
 ## 3. 数据库
 
+### 3.1 数据库管理
 
+1. MySQL安装
 
-### 3.1概述
+   * Ubuntu安装MySQL服务
+     * 终端执行: sudo apt  install mysql-server
+     * 配置文件：/etc/mysql
+     * 数据库存储目录 ：/var/lib/mysql
 
-* 数据存储
+   * Windows安装MySQL
+     * 下载MySQL安装包(windows)  [https://dev.mysql.com/downloads/windows/installer/8.0.html](https://dev.mysql.com/downloads/windows/installer/8.0.html)
+     * 直接运行安装文件安装
 
-1. 人工管理阶段
+2. 启动和连接MySQL服务
 
-   缺点 ：  数据存储量有限，共享处理麻烦，操作容易混乱
+   - 服务端启动
 
-2. 文件管理阶段 （.txt  .doc  .xls）
+     1）查看MySQL状态 : sudo  service  mysql  status
 
-   优点 ：  数据可以长期保存,可以存储大量的数据,使用简单。
+     2）启动/停止/重启服务：sudo  service  mysql    start/stop/restart
 
-   缺点 ：  数据一致性差,数据查找修改不方便,数据冗余度可能比较大。
+     3）连接数据库
 
-3. 数据库管理阶段
+     ```sql
+     mysql    -h  主机地址   -u  用户名    -p  
+     ```
 
-   优点 ： 数据组织结构化降低了冗余度,提高了增删改查的效率,容易扩展,方便程序调用处理
+     > 注意： 
+     >
+     > 1. 回车后输入数据库密码 （我们设置的是123456）
+     >
+     > 2. 如果链接自己主机数据库可省略 -h 选项
 
-   缺点 ： 需要使用sql 或者其他特定的语句，相对比较专业
+   * 关闭连接
 
+     ```sql
+     ctrl-D
+     exit
+     ```
 
+3. 查看已有库
 
-* 数据库应用领域
+   >show databases;
 
-  数据库的应用领域几乎涉及到了需要数据管理的方方面面，融机构、游戏网站、购物网站、论坛网站 ... ...都需要数据库进行数据存储管理。 
+4. 创建库
 
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/view.jpg)
+   >create database 库名 [character set utf8];
 
+   ```sql
+   -- 创建stu数据库，编码为utf8
+   create database stu character set utf8;
+   create database stu charset=utf8;
+   ```
 
+   > 注意：库名的命名
+   >
+   > 1.  数字、字母、下划线,但不能使用纯数字
+   > 2.  库名区分字母大小写
+   > 3.  不要使用特殊字符和mysql关键字
 
-* 基本概念
-* 数据库 ： 按照数据一定结构，存储管理数据的仓库。数据库是在数据库管理系统管理和控制下，在一定介质上的数据集合。
+5. 切换库
 
-* 数据库管理系统 ：管理数据库的软件，用于建立和维护数据库。
+   >use 库名;
 
-* 数据库系统 ： 由数据库和数据库管理系统，开发工具等组成的集合 。
+6. 查看当前所在库
 
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/数据库系统.png)
+   >select database();
 
-
-
-* 数据库分类和常见数据库
-
-  * 关系型数据库和非关系型数据库
-
-  >关系型： 采用关系模型（二维表）来组织数据结构的数据库 
-  >
-  >非关系型： 不采用关系模型组织数据结构的数据库
-
-  * 开源和非开源	
-
-  > 开源：MySQL、SQLite、MongoDB
-
-> 非开源：Oracle、DB2、SQL_Server
-
-  ![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/databases.jpg)
-
-### 3.2 MySQL
-
-1996年，MySQL 1.0发布,作者Monty Widenius, 为一个叫TcX的公司打工，当时只是内部发布。到了96年10月，MySQL 3.11.1发布了，一个月后，Linux版本出现了。真正的MySQL关系型数据库于1998年1月发行第一个版本。MySQL是个开源数据库，后来瑞典有了专门的MySQL开发公司，将该数据库发展壮大，在之后被Sun收购，Sun又被Oracle收购。
-
-官网地址：[https://www.mysql.com/](https://www.mysql.com/)
-
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/mysql.jpg)
-
-* MySQL特点
-  1. 是开源数据库，使用C和C++编写 
-  2. 能够工作在众多不同的平台上
-  3. 提供了用于C、C++、Python、Java、Perl、PHP、Ruby众多语言的API
-  4. 存储结构优良，运行速度快
-  5. 功能全面丰富
-
-
-
-* MySQL安装
-  * Ubuntu安装MySQL服务
-    * 终端执行: sudo apt  install mysql-server
-    * 配置文件：/etc/mysql
-    * 数据库存储目录 ：/var/lib/mysql
-  * Windows安装MySQL
-    * 下载MySQL安装包(windows)  [https://dev.mysql.com/downloads/windows/installer/8.0.html](https://dev.mysql.com/downloads/windows/installer/8.0.html)
-    * 直接运行安装文件安装
-
-
-
-* 启动和连接MySQL服务
-
-  * 服务端启动
-
-    * 查看MySQL状态 : sudo  service  mysql  status
-    * 启动/停止/重启服务：sudo  service  mysql    start/stop/restart
-
-  * 连接数据库
-
-    ```sql
-    mysql    -h  主机地址   -u  用户名    -p  
-    ```
-
-    > 注意： 
-    >
-    > 1. 回车后输入数据库密码 （我们设置的是123456）
-    >
-    > 2. 如果链接自己主机数据库可省略 -h 选项
-
-  * 关闭连接
-
-    ```sql
-    ctrl-D
-    exit
-    ```
-
-
-
-
-* MySQL数据库结构
-
->数据元素 --> 记录 -->数据表 --> 数据库
-
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/库结构.png)
-
-* 基本概念解析
-  * 数据表（table） ： 存放数据的表格 
-  * 字段（column）： 每个列，用来表示该列数据的含义
-  * 记录（row）： 每个行，表示一组完整的数据
-
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/表结构.png)
-
-
-
-### 3.3 SQL语言
-
-* 什么是SQL
-
-结构化查询语言(Structured Query Language)，一种特殊目的的编程语言，是一种数据库查询和程序设计语言，用于存取数据以及查询、更新和管理关系数据库系统。
-
-* SQL语言特点
-  * SQL语言基本上独立于数据库本身
-  * 各种不同的数据库对SQL语言的支持与标准存在着细微的不同
-  * 每条命令以 ; 结尾
-  * SQL命令（除了数据库名和表名）关键字和字符串可以不区分字母大小写
-
-
-
-### 3.4 数据库管理
-
-1. 查看已有库
-
->show databases;
-
-2. 创建库
-
->create database 库名 [character set utf8];
-
-```sql
--- 创建stu数据库，编码为utf8
-create database stu character set utf8;
-create database stu charset=utf8;
-```
-
-> 注意：库名的命名
->
-> 1.  数字、字母、下划线,但不能使用纯数字
-> 2.  库名区分字母大小写
-> 3.  不要使用特殊字符和mysql关键字
-
-3. 切换库
-
->use 库名;
-
-```sql
-e.g. 使用stu数据库
-use stu;
-```
-
-4. 查看当前所在库
-
->select database();
-
-5. 删除库
+7. 删除库
 
 >drop database 库名;
 
-```sql
-e.g. 删除test数据库
-drop database test;
-```
+### 3.2 数据表管理
 
-
-
-### 3.5 数据表管理
-
-* 基本思考过程
-  1. 确定存储内容
-  2. 明确字段构成
-  3. 确定字段数据类型
-
-#### 3.5.1 基础数据类型
+#### 3.2.1 基础数据类型
 
 * 数字类型：
   * 整数类型：INT，SMALLINT，TINYINT，MEDIUMINT，BIGINT
   * 浮点类型：FLOAT，DOUBLE，DECIMAL
   * 比特值类型：BIT
 
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/整型.png)
+![](./img//整型.png)
 
 > 注意：
 >
@@ -1556,7 +1428,7 @@ drop database test;
   * 存储二进制数据： BLOB
   * 存储选项型数据：ENUM，SET
 
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/字符串.png)
+![](./img//字符串.png)
 
 > 注意：
 >
@@ -1565,27 +1437,46 @@ drop database test;
 > 3. enum用来存储给出的多个值中的一个值,即单选，enum('A','B','C')
 > 4. set用来存储给出的多个值中一个或多个值，即多选，set('A','B','C')
 
-
-
-#### 3.5.2 表的基本操作
+#### 3.2.2 表的基本操作
 
 * 创建表
 
->create table 表名(字段名 数据类型 约束,字段名 数据类型 约束,...字段名 数据类型 约束);
+>create table 表名(字段名 数据类型 约束,
+>
+>​                            字段名 数据类型 约束,
+>
+>​                            ...
+>
+>​                            字段名 数据类型 约束);
 
 * 字段约束
-  * 如果你想设置数字为无符号则加上 unsigned
-  * 如果你不想字段为 NULL 可以设置字段的属性为 NOT NULL， 在操作数据库时如果输入该字段的数据为NULL ，就会报错。
-  * DEFAULT 表示设置一个字段的默认值
-  * AUTO_INCREMENT定义列为自增的属性，一般用于主键，数值会自动加1。
-  * PRIMARY KEY 关键字用于定义列为主键。主键的值不能重复,且不能为空。
+  
+  1）如果你想设置数字为无符号则加上 unsigned
+  
+  2）如果你不想字段为 NULL 可以设置字段的属性为 NOT NULL， 
+       在操作数据库时如果输入该字段的数据为NULL ，就会报错。
+  
+  3）DEFAULT 表示设置一个字段的默认值
+  
+  4）AUTO_INCREMENT定义列为自增的属性，一般用于主键，数值会自动加1。
+  
+  5）PRIMARY KEY 关键字用于定义列为主键。主键的值不能重复,且不能为空。
 
 ```sql
 e.g.  创建班级表
-create table class_1 (id int primary key auto_increment,name varchar(32) not null,age tinyint unsigned not null,sex enum('w','m'),score float default 0.0);
+create table class_1 (id int primary key auto_increment,
+                      name varchar(32) not null,
+                      age tinyint unsigned not null,
+                      sex enum('w','m'),
+                      score float default 0.0);
 
 e.g. 创建兴趣班表
-create table interest (id int primary key auto_increment,name varchar(32) not null,hobby set('sing','dance','draw'),level char not null,price decimal(6,2),remark text);
+create table interest (id int primary key auto_increment,
+                       name varchar(32) not null,
+                       hobby set('sing','dance','draw'),
+                       level char not null,
+                       price decimal(6,2),
+                       remark text);
 ```
 
 * 查看数据表
@@ -1604,11 +1495,9 @@ create table interest (id int primary key auto_increment,name varchar(32) not nu
 
   > drop table 表名;
 
+### 3.3 表数据基本操作
 
-
-### 3.6 表数据基本操作
-
-#### 3.5.1 插入(insert)
+#### 3.3.1 插入(insert)
 
 ```SQL
 insert into 表名 values(值1),(值2),...;
@@ -1618,12 +1507,10 @@ insert into 表名(字段1,...) values(值1),...;
 ```sql
 e.g. 
 insert into class_1 values (2,'Baron',10,'m',91),(3,'Jame',9,'m',90);
-
 insert into class_1 (name,age,sex,score) values ('Lucy',17,'w',81);
-
 ```
 
-#### 3.6.2 查询(select)
+#### 3.3.2 查询(select)
 
 ```SQL
 select * from 表名 [where 条件];
@@ -1636,24 +1523,21 @@ select * from class_1;
 select name,age from class_1;
 ```
 
+#### 3.3.3 where子句
 
-
-#### 3.6.3 where子句
-
-where子句在sql语句中扮演了重要角色，主要通过一定的运算条件进行数据的筛选，在查询，删除，修改中都有使用。
+​	where子句在sql语句中扮演了重要角色，主要通过一定的运算条件进行数据的筛选。
 
 * 算数运算符
 
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/算数.png)
+![](./img/算数.png)
 
 ```sql
-e.g.
 select * from class_1 where age % 2 = 0;
 ```
 
 * 比较运算符
 
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/比较.png)
+![](./img/比较.png)
 
 ```sql
 e.g.
@@ -1664,20 +1548,14 @@ select * from class_1 where age in (8,9);
 
 * 逻辑运算符
 
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/逻辑.png)
+![](./img/逻辑.png)
 
 ```sql
 e.g.
 select * from class_1 where sex='m' and age>9;
 ```
 
-
-
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/运算符.png)
-
-
-
-#### 3.6.4 更新表记录(update)
+#### 3.3.4 更新表记录(update)
 
 ```SQL
 update 表名 set 字段1=值1,字段2=值2,... where 条件;
@@ -1690,9 +1568,7 @@ e.g.
 update class_1 set age=11 where name='Abby';
 ```
 
-
-
-#### 3.6.5 删除表记录（delete）
+#### 3.3.5 删除表记录（delete）
 
 ```SQL
 delete from 表名 where 条件;
@@ -1705,9 +1581,7 @@ e.g.
 delete from class_1 where name='Abby';
 ```
 
-
-
-#### 3.6.6 表字段的操作(alter)
+#### 3.3.6 表字段的操作(alter)
 
 ```SQL
 语法 ：alter table 表名 执行动作;
@@ -1719,28 +1593,21 @@ delete from class_1 where name='Abby';
 * 删除字段(drop)
     alter table 表名 drop 字段名;
 * 修改数据类型(modify)
-    alter table 表名 modify 字段名 新数据类型;
+    alter table 表名 modify 字段名 新数据类型 约束条件;
 * 修改字段名(change)
-    alter table 表名 change 旧字段名 新字段名 新数据类型;
+    alter table 表名 change 旧字段名 新字段名 新数据类型 约束条件;
 * 表重命名(rename)
     alter table 表名 rename 新表名;
 ```
 
-```sql
-e.g. 
-alter table interest add tel char(11) after name;
-```
-
-
-
-#### 3.5.7 时间类型数据
+#### 3.3.7 时间类型数据
 
 * 日期 ： DATE
 * 日期时间： DATETIME，TIMESTAMP
 * 时间： TIME
 * 年份 ：YEAR
 
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/时间.png)
+![](./img/时间.png)
 
 * 时间格式
 
@@ -1754,16 +1621,15 @@ alter table interest add tel char(11) after name;
   > 注意:
   >
   > 1. datetime ：以系统时间存储
-  > 2. timestamp ：以标准时间存储但是查看时转换为系统时区，所以表现形式和datetime相同
-
-
+  > 2. timestamp ：以标准时间存储但查看时转换为系统时区，所以表现形式和datetime相同
 
 ```sql
-e.g.
-create table marathon (id int primary key auto_increment,athlete varchar(32),birthday date,registration_time datetime,performance time);
+create table marathon (id int primary key auto_increment,
+                       athlete varchar(32),
+                       birthday date,
+                       registration_time datetime,
+                       performance time);
 ```
-
-
 
 * 日期时间函数
 
@@ -1776,11 +1642,9 @@ create table marathon (id int primary key auto_increment,athlete varchar(32),bir
   时间类型数据可以进行比较和排序等操作，在写时间字符串时尽量按照标准格式书写。
 
 ```sql
-  select * from marathon where birthday>='2000-01-01';
-  select * from marathon where birthday>="2000-07-01" and performance<="2:30:00";
+select * from marathon where birthday>='2000-01-01';
+select * from marathon where birthday>="2000-07-01" and performance<="2:30:00";
 ```
-
-
 
 ### 3.7 高级查询语句
 
