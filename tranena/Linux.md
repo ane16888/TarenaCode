@@ -1681,6 +1681,9 @@ delete from class_1 where name='Abby';
      
      ```sql
      select * from class_1 where name regexp '^B.+';
+     ```
+   ```
+  
    ```
   
 * as 用法
@@ -1702,6 +1705,7 @@ delete from class_1 where name='Abby';
   select * from class_1 
   where sex='m' 
   order by age desc;
+  ```
 ```
   
 复合排序：对多个字段排序，即当第一排序项相同时按照第二排序项排序
@@ -2075,234 +2079,218 @@ select count(*) from sanguo where attack > 200;
     * 当主表更改主键字段值时，从表外键字段值变为null
 
 
-#### 3.10.2 表关联设计
+#### 3.7.2 表关联设计
 
-​		当我们应对复杂的数据关系的时候，数据表的设计就显得尤为重要，认识数据之间的依赖关系是更加合理创建数据表关联性的前提。常见的数据关系如下：
+   常见的数据关系如下：
 
 - 一对一关系
 
-> 一张表的一条记录一定只能与另外一张表的一条记录进行对应，反之亦然。
->
-> 举例 :  学生信息和学籍档案，一个学生对应一个档案，一个档案也只属于一个学生
+  > 一张表的一条记录一定只能与另外一张表的一条记录进行对应，反之亦然。
+  >
+  > 举例 :  学生信息和学籍档案，一个学生对应一个档案，一个档案也只属于一个学生
 
-
- ``` sql
-create table student(id int primary key auto_increment,name varchar(50) not null);
-
-create table record(id int primary key auto_increment,
-comment text not null,
-st_id int unique,
-constraint st_fk foreign key(st_id) references student(id) 
-on delete cascade 
-on update cascade
-);
- ```
+  ```sql
+  create table student(id int primary key auto_increment,
+                       name varchar(50) not null);
+  
+  create table record(id int primary key auto_increment,
+                      comment text not null,
+                      st_id int unique,
+                      constraint st_fk foreign key(st_id) references
+                      student(id) on delete cascade on update cascade
+  );
+  ```
 
 
 - 一对多关系
 
-> 一张表中有一条记录可以对应另外一张表中的多条记录；但是反过来，另外一张表的一条记录
-> 只能对应第一张表的一条记录，这种关系就是一对多或多对一
->
-> 举例： 一个人可以拥有多辆汽车，每辆车登记的车主只有一人。
+  > 一张表中有一条记录可以对应另外一张表中的多条记录；但是反过来，另外一张表的一条记录只能对应第一张表的一条记录，这种关系就是一对多或多对一
+  >
+  > 举例： 一个人可以拥有多辆汽车，每辆车登记的车主只有一人。
 
-```sql
-create table person(
-  id varchar(32) primary key,
-  name varchar(30),
-  sex char(1),
-  age int
-);
-
-create table car(
-  id varchar(32) primary key,
-  name varchar(30),
-  price decimal(10,2),
-  pid varchar(32),
-  constraint car_fk foreign key(pid) references person(id)
-);
-```
+  ```sql
+  create table person(
+    id varchar(32) primary key,
+    name varchar(30),
+    sex char(1),
+    age int
+  );
+  
+  create table car(
+    id varchar(32) primary key,
+    name varchar(30),
+    price decimal(10,2),
+    pid varchar(32),
+    constraint car_fk foreign key(pid) references person(id)
+  );
+  ```
 
 - 多对多关系
 
-> 一对表中（A）的一条记录能够对应另外一张表（B）中的多条记录；同时B表中的一条记录
-> 也能对应A表中的多条记录
->
-> 举例：一个运动员可以报多个项目，每个项目也会有多个运动员参加,这时为了表达多对多关系需要单独创建关系表。
+  > 一对表中（A）的一条记录能够对应另外一张表（B）中的多条记录；同时B表中的一条记录也能对应A表中的多条记录
+  >
+  > 举例：一个运动员可以报多个项目，每个项目也会有多个运动员参加,这时为了表达多对多关系需要单独创建关系表。
 
-```mysql
-CREATE TABLE athlete (
-  id int primary key AUTO_INCREMENT,
-  name varchar(30),
-  age tinyint NOT NULL,
-  country varchar(30) NOT NULL,
-  description varchar(30)
-);
+  ```sql
+  CREATE TABLE athlete (
+    id int primary key AUTO_INCREMENT,
+    name varchar(30),
+    age tinyint NOT NULL,
+    country varchar(30) NOT NULL,
+    description varchar(30)
+  );
+  
+  CREATE TABLE item (
+    id int primary key AUTO_INCREMENT,
+    rname varchar(30) NOT NULL
+  );
+  
+  CREATE TABLE athlete_item (
+     id int primary key auto_increment,
+     aid int NOT NULL,
+     tid int NOT NULL,
+     CONSTRAINT athlete_fk FOREIGN KEY (aid) REFERENCES athlete (id),
+     CONSTRAINT item_fk FOREIGN KEY (tid) REFERENCES item (id)
+  );
+  ```
 
-CREATE TABLE item (
-  id int primary key AUTO_INCREMENT,
-  rname varchar(30) NOT NULL
-);
+#### 3.7.3 E-R模型
 
-CREATE TABLE athlete_item (
-   id int primary key auto_increment,
-   aid int NOT NULL,
-   tid int NOT NULL,
-   CONSTRAINT athlete_fk FOREIGN KEY (aid) REFERENCES athlete (id),
-   CONSTRAINT item_fk FOREIGN KEY (tid) REFERENCES item (id)
-);
-```
+* **定义**	
 
-
-
-#### 3.10.3 E-R模型
-
-* **定义**		
-
-```mysql
-E-R模型(Entry-Relationship)即 实体-关系 数据模型,用于数据库设计
-用简单的图(E-R图)反映了现实世界中存在的事物或数据以及他们之间的关系
-```
+  E-R模型(Entry-Relationship)即 实体-关系 数据模型,用于数据库设计
+  用简单的图(E-R图)反映了现实世界中存在的事物或数据以及他们之间的关系	
 
 * **实体、属性、关系**
 
-​	实体
+  实体
 
-```mysql
-1、描述客观事物的概念
-2、表示方法 ：矩形框
-3、示例 ：一个人、一本书、一杯咖啡、一个学生
-```
+  ```
+  1、描述客观事物的概念
+  2、表示方法 ：矩形框
+  3、示例 ：一个人、一本书、一杯咖啡、一个学生
+  ```
 
-​	属性
+  属性
 
-```mysql
-1、实体具有的某种特性
-2、表示方法 ：椭圆形
-3、示例
-   学生属性 ：学号、姓名、年龄、性别、专业 ... 
-   感受属性 ：悲伤、喜悦、刺激、愤怒 ...
-```
+  ```
+  1、实体具有的某种特性
+  2、表示方法 ：椭圆形
+  3、示例
+     学生属性 ：学号、姓名、年龄、性别、专业 ... 
+     感受属性 ：悲伤、喜悦、刺激、愤怒 ...
+  ```
 
-​	关系
+  关系
 
-```mysql
-1、实体之间的联系
-2、一对一关联(1:1)
-3、一对多关联(1:n)
-4、多对多关联(m:n) 
-```
+  ```
+  1、实体之间的联系
+  2、一对一关联(1:1)
+  3、一对多关联(1:n)
+  4、多对多关联(m:n) 
+  ```
 
 * **ER图的绘制**
 
-矩形框代表实体,菱形框代表关系,椭圆形代表属性
+  矩形框代表实体,菱形框代表关系,椭圆形代表属性
 
 
 ![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/er.PNG)
 
-#### 3.10.4 表连接
+#### 3.7.4 表连接
 
-如果多个表存在一定关联关系，可以多表在一起进行查询操作，其实表的关联整理与外键约束之间并没有必然联系，但是基于外键约束设计的具有关联性的表往往会更多使用关联查询查找数据。
+​	如果多个表存在一定关联关系，可以多表在一起进行查询操作，其实表的关联整理与外	键约束之间并没有必然联系，但是基于外键约束设计的具有关联性的表往往会更多使用	关联查询查找数据。
 
 * 简单多表查询
 
-多个表数据可以联合查询，语法格式如下：
+  多个表数据可以联合查询，语法格式如下：
 
-```sql
-select  字段1,字段2... from 表1,表2... [where 条件]
-```
+  ```sql
+  select  字段1,字段2... from 表1,表2... [where 条件]
+  ```
 
-```sql
-e.g.
-select * from dept,person where dept.id = person.dept_id;
-```
+  ```sql
+  e.g.
+  select * from dept,person where dept.id = person.dept_id;
+  ```
 
 * 内连接
 
-内连接查询只会查找到符合条件的记录，其实结果和表关联查询是一样的,官方更推荐使用内连接查询。
+  内连接查询只会查找到符合条件的记录，其实结果和表关联查询是一样的,官方更推荐使用内连接查询。
 
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/inner.PNG)
+  ![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/inner.PNG)
 
-```sql
-SELECT 字段列表
-    FROM 表1  INNER JOIN  表2
-ON 表1.字段 = 表2.字段;
-```
+  ```sql
+  SELECT 字段列表
+      FROM 表1  INNER JOIN  表2
+  ON 表1.字段 = 表2.字段;
+  ```
 
-```sql
-select * from person inner join  dept  on  person.dept_id =dept.id;
-```
+  ```sql
+  select * from person inner join  dept  on  person.dept_id =dept.id;
+  ```
 
 * 笛卡尔积
 
-笛卡尔积就是将A表的每一条记录与B表的每一条记录强行拼在一起。所以，如果A表有n条记录，B表有m条记录，笛卡尔积产生的结果就会产生n*m条记录。
+  笛卡尔积就是将A表的每一条记录与B表的每一条记录强行拼在一起。所以，如果A表有n条记录，B表有m条记录，笛卡尔积产生的结果就会产生n*m条记录。
 
-```sql
-select * from person inner join  dept;
-```
-
-
+  ```sql
+  select * from person inner join  dept;
+  ```
 
 - 左连接  : 左表全部显示，显示右表中与左表匹配的项
 
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/left.PNG)
+  ![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/left.PNG)
 
-```sql
-SELECT 字段列表
-    FROM 表1  LEFT JOIN  表2
-ON 表1.字段 = 表2.字段;
-```
+  ```sql
+  SELECT 字段列表
+      FROM 表1  LEFT JOIN  表2
+  ON 表1.字段 = 表2.字段;
+  ```
 
-```sql
-select * from person left join  dept  on  person.dept_id =dept.id;
-
-# 查询每个部门员工人数
-select dname,count(name) from dept left join person on dept.id=person.dept_id group by dname;
-```
+  ```sql
+  select * from person left join  dept  on  person.dept_id =dept.id;
+  
+  # 查询每个部门员工人数
+  select dname,count(name) from dept left join person on dept.id=person.dept_id group by dname;
+  ```
 
 - 右连接 ：右表全部显示，显示左表中与右表匹配的项
 
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/right.PNG)
+  ![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/right.PNG)
 
-```sql
-SELECT 字段列表
-    FROM 表1  RIGHT JOIN  表2
-ON 表1.字段 = 表2.字段;
-```
+  ```sql
+  SELECT 字段列表
+      FROM 表1  RIGHT JOIN  表2
+  ON 表1.字段 = 表2.字段;
+  ```
 
-```sql
-select * from person right join  dept  on  person.dept_id =dept.id;
-```
+  ```
+  select * from person right join  dept  on  person.dept_id =dept.id;
+  ```
 
-
-
-> 注意：我们尽量使用数据量大的表作为基准表，即左表
+  > 注意：我们尽量使用数据量大的表作为基准表，即左表
 
 
-
-### 3.11 视图
+### 3.8 视图
 
 * 视图概念
 
-视图是存储的查询语句,当调用的时候,产生结果集,视图充当的是虚拟表的角色。其实视图可以理解为一个表或多个表中导出来的表，作用和真实表一样，包含一系列带有行和列的数据 视图中，用户可以使用SELECT语句查询数据，也可以使用INSERT，UPDATE，DELETE修改记录，视图可以使用户操作方便，并保障数据库系统安全，如果原表改名或者删除则视图也失效。
+  视图是存储的查询语句,当调用的时候,产生结果集,视图充当的是虚拟表的角色。其实视图可以理解为一个表或多个表中导出来的表，作用和真实表一样，包含一系列带有行和列的数据 视图中，用户可以使用SELECT语句查询数据，也可以使用INSERT，UPDATE，DELETE修改记录，视图可以使用户操作方便，并保障数据库系统安全，如果原表改名或者删除则视图也失效。
 
 * 创建视图
 
-```sql
-语法结构：
-
-CREATE [OR REPLACE] VIEW [view_name] AS [SELECT_STATEMENT];
-
-释义：
-
-CREATE VIEW： 创建视图
-OR REPLACE : 可选，如果添加原来有同名视图的情况下会覆盖掉原有视图
-view_name ： 视图名称
-SELECT_STATEMENT ：SELECT语句
-
-e.g.
-create view  c1 as select name,age from class_1;
-```
+  ```sql
+  语法结构：
+  CREATE [OR REPLACE] VIEW [view_name] AS [SELECT_STATEMENT];
+  释义：
+  CREATE VIEW： 创建视图
+  OR REPLACE : 可选，如果添加原来有同名视图的情况下会覆盖掉原有视图
+  view_name ： 视图名称
+  SELECT_STATEMENT ：SELECT语句
+  e.g.
+  create view  c1 as select name,age from class_1;
+  ```
 
 * 视图表的增删改查操作
 
@@ -2313,8 +2301,6 @@ create view  c1 as select name,age from class_1;
   ```sql
   show full tables in stu where table_type like 'VIEW';
   ```
-
-  
 
 * 删除视图
 
@@ -2346,35 +2332,28 @@ create view  c1 as select name,age from class_1;
 
   4. 让数据更加清晰。
 
-     
 
   * 缺点
 
   1. 视图的性能相对较差，从数据库视图查询数据可能会很慢。
 
-     
 
+### 3.9 函数和存储过程
 
+​	存储过程和函数是事先经过编译并存储在数据库中的一段sql语句集合，
 
-### 3.12 函数和存储过程
+​	调用存储过程和函数可以简化应用开发工作，提高数据处理的效率。
 
-存储过程和函数是事先经过编译并存储在数据库中的一段sql语句集合，调用存储过程和函数可以简化应用开发工作，提高数据处理的效率。
-
-#### 3.12.1 函数创建
+#### 3.9.1 函数创建
 
 ```sql
-delimiter 自定义符号　　-- 如果函数体只有一条语句, begin和end可以省略, 同时delimiter也可以省略
-
+delimiter 自定义符号　　
+-- 如果函数体只有一条语句, begin和end可以省略, 同时delimiter也可以省略
 　　create function 函数名(形参列表) returns 返回类型　　-- 注意是retruns
-
 　　begin
-
 　　　　函数体　　　　-- 函数语句集,set @a 定义变量
-
 　　　　return val
-
 　　end  自定义符号
-
 delimiter ;
 
 释义：
@@ -2410,15 +2389,11 @@ delimiter ;
 select queryNameById(1);
 ```
 
-
-
 * 设置变量
   * 用户变量方法：   set  @[变量名] = 值；使用时用@[变量名]。
   * 局部变量 ： 在函数内部设置  declare [变量名] [变量类型] ；局部变量可以使用set赋值或者使用into关键字。
 
-
-
-#### 3.12.2存储过程创建
+#### 3.9.2存储过程创建
 
 创建存储过程语法与创建函数基本相同，但是没有返回值。
 
@@ -2484,7 +2459,7 @@ call p_out(@num)
 
 
 
-#### 3.12.3 存储过程和存储函数操作
+#### 3.9.3 存储过程和存储函数操作
 
 1. 调用存储过程
 
@@ -2532,26 +2507,22 @@ show create  {procedure|function}  存储过程或存储函数的名称
 
 语法：
 
-```
+```sql
 DROP {PROCEDURE | FUNCTION} [IF EXISTS] sp_name
 ```
 
-
-
-#### 3.12.4 函数和存储过程区别
+#### 3.9.4 函数和存储过程区别
 
 1. 函数有且只有一个返回值，而存储过程不能有返回值。
 2. 函数只能有输入参数，而存储过程可以有in,out,inout多个类型参数。
 3. 存储过程中的语句功能更丰富，实现更复杂的业务逻辑，可以理解为一个按照预定步骤调用的执行过程，而函数中不能展示查询结果集语句，只是完成查询的工作后返回一个结果，功能针对性比较强。
 4. 存储过程一般是作为一个独立的部分来执行(call调用)。而函数可以作为查询语句的一个部分来调用。
 
+### 3.10 事务控制
 
+#### 3.10.1 事务概述
 
-### 3.13 事务控制
-
-#### 3.13.1 事务概述
-
-MySQL 事务主要用于处理操作量大，复杂度高的数据。比如说，在人员管理系统中，你删除一个人员，既需要删除人员的基本资料，也要删除和该人员相关的信息，如信箱，文章等等，如果操作就必须同时操作成功，如果有一个不成功则所有数据都不动。这时候数据库操作语句就构成一个事务。事务主要处理数据的增删改操作。
+​	MySQL 事务主要用于处理操作量大，复杂度高的数据。比如说，在人员管理系统中，你删除一个人员，既需要删除人员的基本资料，也要删除和该人员相关的信息，如信箱，文章等等，如果操作就必须同时操作成功，如果有一个不成功则所有数据都不动。这时候数据库操作语句就构成一个事务。事务主要处理数据的增删改操作。
 
 * 定义
 
@@ -2563,7 +2534,7 @@ MySQL 事务主要用于处理操作量大，复杂度高的数据。比如说�
 > 确保数据操作过程中的安全。
 
 
-#### 3.13.2 事务操作
+#### 3.10.2 事务操作
 
 
 1. 开启事务
@@ -2583,7 +2554,7 @@ MySQL 事务主要用于处理操作量大，复杂度高的数据。比如说�
 > 注意：事务操作只针对数据操作。rollback不能对数据库，数据表结构操作恢复。
 
 
-#### 3.13.3 事务四大特性
+#### 3.10.3 事务四大特性
 
 1. 原子性（atomicity）
 
@@ -2605,7 +2576,7 @@ MySQL 事务主要用于处理操作量大，复杂度高的数据。比如说�
 
 
 
-####  3.13.4 事务隔离级别
+####  3.10.4 事务隔离级别
 
 事务四大特性中的隔离性是在使用事务时最为需要注意的特性，因为隔离级别不同带来的操作现象也有区别
 
@@ -2642,11 +2613,9 @@ MySQL 事务主要用于处理操作量大，复杂度高的数据。比如说�
 
 ![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/隔离.png)
 
-### 3.14 数据库优化
+### 3.11 数据库优化
 
-
-
-#### 3.14.1 数据库设计范式
+#### 3.11.1 数据库设计范式
 
 设计关系数据库时，遵从不同的规范要求，设计出合理的关系型数据库，这些不同的规范要求被称为不同的范式。
 
@@ -2667,7 +2636,7 @@ MySQL 事务主要用于处理操作量大，复杂度高的数据。比如说�
 
 
 
-#### 3.14.2  MySQL存储引擎
+#### 3.11.2  MySQL存储引擎
 
 * **定义**： mysql数据库管理系统中用来处理表的处理器
 
@@ -2724,7 +2693,7 @@ MySQL 事务主要用于处理操作量大，复杂度高的数据。比如说�
 
 
 
-#### 3.14.3 字段数据类型选择
+#### 3.11.3 字段数据类型选择
 
 - 优先程度   数字 >  时间日期 > 字符串
 - 同一级别   占用空间小的 > 占用空间多的
@@ -2739,7 +2708,7 @@ MySQL 事务主要用于处理操作量大，复杂度高的数据。比如说�
 
 
 
-#### 3.14.4 键的设置
+#### 3.11.4 键的设置
 
 - Innodb如果不设置主键也会自己设置隐含的主键，所以最好自己设置
 - 尽量设置占用空间小的字段为主键
@@ -2748,7 +2717,7 @@ MySQL 事务主要用于处理操作量大，复杂度高的数据。比如说�
 
 
 
-#### 3.14.5 explain语句
+#### 3.11.5 explain语句
 
 使用 EXPLAIN 关键字可以模拟优化器执行SQL查询语句，从而知道MySQL是如何处理你的SQL语句的。这可以帮你分析你的查询语句或是表结构的性能瓶颈。通过explain命令可以得到:
 
@@ -2791,7 +2760,7 @@ type中包含的值：
 
 
 
-#### 3.14.6 SQL优化
+#### 3.11.6 SQL优化
 
 - 尽量选择数据类型占空间少，在where ，group by，order by中出现的频率高的字段建立索引
 
@@ -2827,7 +2796,7 @@ type中包含的值：
 
 
 
-#### 3.14.7 表的拆分
+#### 3.11.7 表的拆分
 
 垂直拆分 ： 表中列太多，分为多个表，每个表是其中的几个列。将常查询的放到一起，blob或者text类型字段放到另一个表
 
@@ -2835,36 +2804,39 @@ type中包含的值：
 
 
 
-### 3.15 数据库备份和用户管理
+### 3.12 数据库备份和用户管理
 
-
-
-#### 3.15.1 表的复制
+#### 3.12.1 表的复制
 
 1. 表能根据实际需求复制数据
+
 2. 复制表时不会把KEY属性复制过来
 
-**语法**
+3. 语法
 
-```mysql
-create table 表名 select 查询命令;
-```
+   ```sql
+   create table 表名 select 查询命令;
+   ```
 
-
-
-#### 3.15.2 数据备份
+#### 3.12.2 数据备份
 
 1. 备份命令格式
 
 > mysqldump -u  用户名  -p  源库名  >  ~/stu.sql
+>
+> --all-databases   备份所有库
+>
+> db_name  备份单个库
+>
+> -B 库1 库2 库3   备份多个库
+>
+> 库名  表1  表2  表3   备份指定库的多张表
 
 2. 恢复命令格式
 
 > mysql -u  root -p  目标库名 < stu.sql
 
-
-
-#### 3.15.3 用户权限管理
+#### 3.12.3 用户权限管理
 
 **开启MySQL远程连接**
 
@@ -2928,17 +2900,13 @@ all privileges 、select 、insert ，update，delete，alter等。
   drop user "duty"@"%";
 ```
 
-
-
-### 3.16 pymysql模块
+### 3.13 pymysql模块
 
 pymysql是一个第三方库，如果自己的计算机上没有可以在终端使用命令进行安装。
 
-```
+```sql
 sudo pip3 install pymysql
 ```
-
-
 
 * pymysql使用流程
 
