@@ -1670,7 +1670,7 @@ delete from class_1 where name='Abby';
   1. 模糊查询
 
      LIKE用于在where子句中进行模糊查询，SQL LIKE 子句中使用百分号` %`来表示任意0个或多个字符，下划线`_`表示任意一个字符。
-   
+  
      ```sql
      select * from class_1 where name like 'A%_';
      ```
@@ -1709,7 +1709,7 @@ delete from class_1 where name='Abby';
   ```sql
   select * from class_1 
 order by score desc,age;
-  ```
+```
 
 * 限制
 
@@ -1837,10 +1837,9 @@ select count(*) from sanguo where attack > 200;
   ```sql
   select age,sex,count(*) from class1 group by age,sex;
   ```
-
-
+  
   e.g. : 所有国家的男英雄中 英雄数量最多的前2名的 国家名称及英雄数量
-
+  
   ```sql
   select country,count(id) as number from sanguo 
   where gender='M' group by country
@@ -1991,28 +1990,29 @@ select count(*) from sanguo where attack > 200;
 #### 3.7.1 外键约束
 
 * 约束 : 约束是一种限制，它通过对表的行或列的数据做出限制，来确保表的数据的完整性、唯一性
+
 * foreign key 功能 : 建立表与表之间的某种约束的关系，由于这种关系的存在，能够让表与表之间的数据，更加的完整，关连性更强，为了具体说明创建如下部门表和人员表。
+
 * 示例
 
-```sql
-# 创建部门表
-CREATE TABLE dept (id int PRIMARY KEY auto_increment,dname VARCHAR(50) not null);
-```
+  ```sql
+  # 创建部门表
+  CREATE TABLE dept (id int PRIMARY KEY auto_increment,
+                     dname VARCHAR(50) not null);
+  ```
 
-```sql
-# 创建人员表
-CREATE TABLE person (
-  id int PRIMARY KEY AUTO_INCREMENT,
-  name varchar(32) NOT NULL,
-  age tinyint DEFAULT 0,
-  sex enum('m','w','o') DEFAULT 'o',
-  salary decimal(8,2) DEFAULT 250.00,
-  hire_date date NOT NULL,
-  dept_id int
-) ;
-```
-
-上面两个表中每个人员都应该有指定的部门，但是实际上在没有约束的情况下人员是可以没有部门的或者也可以添加一个不存在的部门，这显然是不合理的。
+  ```sql
+  # 创建人员表
+  CREATE TABLE person (
+    id int PRIMARY KEY AUTO_INCREMENT,
+    name varchar(32) NOT NULL,
+    age tinyint DEFAULT 0,
+    sex enum('m','w','o') DEFAULT 'o',
+    salary decimal(8,2) DEFAULT 250.00,
+    hire_date date NOT NULL,
+    dept_id int
+  ) ;
+  ```
 
 * 主表和从表：若同一个数据库中，B表的外键与A表的主键相对应，则A表为主表，B表为从表。
 
@@ -2029,8 +2029,7 @@ CREATE TABLE person (
   ```
 
   该语法可以在 CREATE TABLE 和 ALTER TABLE 时使用
-
-
+  
   ```sql
   # 创建表时直接简历外键
   CREATE TABLE person (
@@ -2042,9 +2041,7 @@ CREATE TABLE person (
     hire_date date NOT NULL,
     dept_id int ,
     constraint dept_fk foreign key(dept_id) references dept(id));
-  ```
-
-  ```sql
+    
   # 建立表后增加外键
   alter table person add constraint dept_fk foreign key(dept_id) references dept(id);
   ```
@@ -2053,8 +2050,6 @@ CREATE TABLE person (
   >
   > 1. 并不是任何情况表关系都需要建立外键来约束，如果没有类似上面的约束关系时也可以不建立。
   > 2. 从表的外键字段数据类型与指定的主表主键应该相同。
-
-
 
 
 * 通过外键名称解除外键约束
@@ -2068,11 +2063,9 @@ CREATE TABLE person (
 
   > 注意：删除外键后发现desc查看索引标志还在，其实外键也是一种索引，需要将外键名称的索引删除之后才可以。
 
-
-
 * 级联动作
 
-  * restrict(默认)  :  on delete restrict  on update restrict
+  * restrict(默认)  :  on delete restrict     on update restrict
     * 当主表删除记录时，如果从表中有相关联记录则不允许主表删除
     * 当主表更改主键字段值时，如果从表有相关记录则不允许更改
   * cascade ：数据级联更新  on delete cascade   on update cascade
@@ -2081,11 +2074,10 @@ CREATE TABLE person (
     * 当主表删除记录时，从表外键字段值变为null
     * 当主表更改主键字段值时，从表外键字段值变为null
 
-  
 
 #### 3.10.2 表关联设计
 
-当我们应对复杂的数据关系的时候，数据表的设计就显得尤为重要，认识数据之间的依赖关系是更加合理创建数据表关联性的前提。常见的数据关系如下：
+​		当我们应对复杂的数据关系的时候，数据表的设计就显得尤为重要，认识数据之间的依赖关系是更加合理创建数据表关联性的前提。常见的数据关系如下：
 
 - 一对一关系
 
