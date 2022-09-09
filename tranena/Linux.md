@@ -2331,11 +2331,12 @@ select count(*) from sanguo where attack > 200;
   3. 提高安全性，可以给不同用户提供不同的视图。
 
   4. 让数据更加清晰。
-
-
-  * 缺点
-
-  1. 视图的性能相对较差，从数据库视图查询数据可能会很慢。
+  
+  
+    * 缺点
+  
+    1. 视图的性能相对较差，从数据库视图查询数据可能会很慢。
+  
 
 
 ### 3.9 函数和存储过程
@@ -2349,15 +2350,15 @@ select count(*) from sanguo where attack > 200;
 ```sql
 delimiter 自定义符号　　
 -- 如果函数体只有一条语句, begin和end可以省略, 同时delimiter也可以省略
-　　create function 函数名(形参列表) returns 返回类型　　-- 注意是retruns
-　　begin
-　　　　函数体　　　　-- 函数语句集,set @a 定义变量
-　　　　return val
-　　end  自定义符号
+create function 函数名(形参列表) returns 返回类型　　-- 注意是retruns
+begin
+　　函数体　　-- 函数语句集,set @a 定义变量
+　　return val
+end  自定义符号
 delimiter ;
 
 释义：
-delimiter 自定义符号 是为了在函数内些语句方便，制定除了;之外的符号作为函数书写结束标志,一般用$$或者//
+delimiter 自定义符号 是为了在函数内写语句方便，制定除了;之外的符号作为函数书写结束标志,一般用$$或者//
 形参列表 ： 形参名 类型   类型为mysql支持类型
 返回类型:  函数返回的数据类型,mysql支持类型即可
 函数体： 若干sql语句组成，如果只有一条语句也可以不写delimiter和begin,end
@@ -2382,7 +2383,9 @@ delimiter $$
 create function queryNameById(uid int(10)) 
 returns varchar(20)
 begin
-return  (select name from class_1 where id=uid);
+	insert into cls values(2,"Joy",11,"m",77);
+	set @a=(select name from class_1 where id=uid);
+return @a;
 end $$
 delimiter ;
 
@@ -2391,45 +2394,54 @@ select queryNameById(1);
 
 * 设置变量
   * 用户变量方法：   set  @[变量名] = 值；使用时用@[变量名]。
-  * 局部变量 ： 在函数内部设置  declare [变量名] [变量类型] ；局部变量可以使用set赋值或者使用into关键字。
+  
+  * 局部变量 ： 在函数内部设置  declare [变量名] [变量类型] ；
+  
+    ​					局部变量可以使用set赋值或者使用into关键字。
+  
+    ```sql
+    delimiter $$　
+    　　create procedure st()
+    　　begin
+    　　　　declare a int;
+           set a=1;
+           select * from cls where id=a;
+           select * from cls where id=1 into a;
+    　　end  $$
+    delimiter $$
+    ```
 
-#### 3.9.2存储过程创建
+#### 3.9.2 存储过程创建
 
-创建存储过程语法与创建函数基本相同，但是没有返回值。
+- 创建存储过程语法与创建函数基本相同，但是没有返回值。
 
-```sql
-delimiter 自定义符号　
+  ```sql
+  delimiter 自定义符号　
+  　　create procedure 存储过程名(形参列表)
+  　　begin
+  　　　　存储过程　　　　-- 存储过程语句集,set @a 定义变量
+  　　end  自定义符号
+  delimiter ;
+  
+  释义：
+  delimiter 自定义符号 是为了在函数内些语句方便，制定除了;之外的符号作为函数书写结束标志
+  形参列表 ：[ IN | OUT | INOUT ] 形参名 类型
+            in 输入，out  输出，inout 可以输入也可以输出
+  存储过程： 若干sql语句组成，如果只有一条语句也可以不写delimiter和begin,end
+  ```
 
-　　create procedure 存储过程名(形参列表)
-
-　　begin
-
-　　　　存储过程　　　　-- 存储过程语句集,set @a 定义变量
-
-　　end  自定义符号
-
-delimiter ;
-
-释义：
-delimiter 自定义符号 是为了在函数内些语句方便，制定除了;之外的符号作为函数书写结束标志
-形参列表 ：[ IN | OUT | INOUT ] 形参名 类型
-          in 输入，out  输出，inout 可以输入也可以输出
-存储过程： 若干sql语句组成，如果只有一条语句也可以不写delimiter和begin,end
-
-```
-
-```sql
-e.g. 存储过程创建和调用
-delimiter $$
-create procedure st() 
-begin 
-    select name,age from class_1; 
-    select name,score from class_1 order by score desc; 
-end $$
-delimiter ;
-
-call st();
-```
+  ```sql
+  e.g. 存储过程创建和调用
+  delimiter $$
+  create procedure st() 
+  begin 
+      select name,age from class_1; 
+      select name,score from class_1 order by score desc; 
+  end $$
+  delimiter ;
+  
+  call st();
+  ```
 
 * 存储过程三个参数的区别
 
@@ -2439,61 +2451,49 @@ call st();
 
   * INOUT类型参数同样只能接收一个变量，但是这个变量可以在存储过程内部使用。在存储过程内部的修改也会传递到外部。
 
+    ```sql
+    e.g. : 分别将参数类型改为IN OUT INOUT 看一下结果区别
+    delimiter $$
+    create procedure p_out ( OUT num int )
+    begin
+        select num;
+        set num=100;
+        select num;
+    end $$
     
-
-```sql
-e.g. : 分别将参数类型改为IN OUT INOUT 看一下结果区别
-delimiter $$
-create procedure p_out ( OUT num int )
-begin
-    select num;
-    set num=100;
-    select num;
-end $$
-
-delimiter ;
-
-set @num=10;
-call p_out(@num)
-```
-
-
+    delimiter ;
+    
+    set @num=10;
+    call p_out(@num)
+    ```
 
 #### 3.9.3 存储过程和存储函数操作
 
 1. 调用存储过程
 
-语法：
-
-```
-call 存储过程名字（[存储过程的参数[,……]])
-```
+   ```sql
+   call 存储过程名字（[存储过程的参数[,……]])
+   ```
 
 2. 调用存储函数
 
-语法：
-
-```
-select 存储函数名字（[存储过程的参数[,……]])
-```
+   ```sql
+   select 存储函数名字（[存储过程的参数[,……]])
+   ```
 
 3. 使用show status语句查看存储过程和函数的信息
 
-语法：
+   ```sql
+   show {procedure|function} status [like’存储过程或存储函数的名称’]
+   ```
 
-```
-show {procedure|function} status [like’存储过程或存储函数的名称’]
-```
+   显示内容：数据库、名字、类型、创建者、创建和修改日期
 
-显示内容：数据库、名字、类型、创建者、创建和修改日期
+4. 使用show create语句查看存储过程和函数的定义
 
-4.  使用show create语句查看存储过程和函数的定义
-
-语法：
-
-```
-show create  {procedure|function}  存储过程或存储函数的名称
-```
+   ```sql
+   show create  {procedure|function}  存储过程或存储函数的名称
+   ```
 
 5. 查看所有函数或者存储过程
 
@@ -2501,15 +2501,11 @@ show create  {procedure|function}  存储过程或存储函数的名称
    select name from mysql.proc where db='stu' and type='[procedure/function]';
    ```
 
-   
-
 6. 删除存储过程或存储函数
 
-语法：
-
-```sql
-DROP {PROCEDURE | FUNCTION} [IF EXISTS] sp_name
-```
+   ```sql
+   DROP {PROCEDURE | FUNCTION} [IF EXISTS] sp_name
+   ```
 
 #### 3.9.4 函数和存储过程区别
 
@@ -2536,20 +2532,24 @@ DROP {PROCEDURE | FUNCTION} [IF EXISTS] sp_name
 
 #### 3.10.2 事务操作
 
-
 1. 开启事务
 
-```mysql
+   ```
    mysql>begin; # 方法1
-```
+   ```
 
 2. 开始执行事务中的若干条SQL命令（增删改）
+
 3. 终止事务，若begin之后使用commit提交事务或者使用rollback进行事务回滚。
 
-```mysql
+   ​				  若begin之后没有commit而是使用其他语句，比如select，那么会自动commit
+
+   ​				  修改直接生效。
+
+   ```sql
    mysql>commit; # 事务中SQL命令都执行成功,提交到数据库,结束!
    mysql>rollback; # 有SQL命令执行失败,回滚到初始状态,结束!
-```
+   ```
 
 > 注意：事务操作只针对数据操作。rollback不能对数据库，数据表结构操作恢复。
 
@@ -2578,7 +2578,7 @@ DROP {PROCEDURE | FUNCTION} [IF EXISTS] sp_name
 
 ####  3.10.4 事务隔离级别
 
-事务四大特性中的隔离性是在使用事务时最为需要注意的特性，因为隔离级别不同带来的操作现象也有区别
+​	隔离性是在使用事务时最需要注意的特性，因为隔离级别不同带来的操作现象也有区别
 
 * 隔离级别
 
@@ -2610,72 +2610,46 @@ DROP {PROCEDURE | FUNCTION} [IF EXISTS] sp_name
     > 这种隔离级别很少使用，吞吐量太低，用户体验差
     > 这种级别可以避免“幻像读”，每一次读取的都是数据库中真实存在数据，事务A与事务B串行，而不并发
 
-
-![](F:/BaiduNetdiskDownload/000001源码笔记软件/配套资料/Note/FILE_MYSQL_RE/img/隔离.png)
-
 ### 3.11 数据库优化
 
-#### 3.11.1 数据库设计范式
-
-设计关系数据库时，遵从不同的规范要求，设计出合理的关系型数据库，这些不同的规范要求被称为不同的范式。
-
-> 目前关系数据库有六种范式：第一范式（1NF）、第二范式（2NF）、第三范式（3NF）、巴斯-科德范式（BCNF）、第四范式(4NF）和第五范式（5NF，又称完美范式）。
-
-各种范式呈递次规范，越高的范式数据库冗余越小。但是范式越高也意味着表的划分更细，一个数据库中需要的表也就越多，此时多个表联接在一起的花费是巨大的，尤其是当需要连接的两张或者多张表数据非常庞大的时候，表连接操作几乎是一个噩梦，这严重地降低了系统运行性能。所以通常数据库设计遵循第一第二第三范式，以避免数据操作异常,又不至于表关系过于复杂。
-
-
-范式简介：
-
-- 第一范式： 数据库表的每一列都是不可分割的原子数据项，而不能是集合，数组，记录等组合的数据项。简单来说要求数据库中的表示二维表，每个数据元素不可再分。
-
-  例如： 在国内的话通常理解都是姓名是一个不可再拆分的单位，这时候就符合第一范式；但是在国外的话还要分为FIRST NAME和LAST NAME，这时候姓名这个字段就是还可以拆分为更小的单位的字段，就不符合第一范式了。
-
-- 第二范式： 第二范式（2NF）要求数据库表中的每个实例或记录必须可以被唯一地区分，所有属性依赖于主属性。即选取一个能区分每个实体的属性或属性组，作为实体的唯一标识，每个属性都能被主属性筛选。其实简单理解要设置一个区分各个记录的主键就好了。
-
-- 第三范式： 在第二范式的基础上属性不传递依赖，即每个属性不依赖其他非主属性。要求一个表中不包含已在其它表中包含的非主关键字信息。其实简单来说就是合理使用外键，使不同的表中不要有重复的字段就好了。
-
-
-
-#### 3.11.2  MySQL存储引擎
+#### 3.11.1  MySQL存储引擎
 
 * **定义**： mysql数据库管理系统中用来处理表的处理器
 
 * **基本操作**
 
-```mysql
-1、查看所有存储引擎
-   mysql> show engines;
-2、查看已有表的存储引擎
-   mysql> show create table 表名;
-3、创建表指定
-   create table 表名(...)engine=MyISAM;
-4、已有表指定
-   alter table 表名 engine=InnoDB;
-```
+  ```sql
+  # 查看所有存储引擎
+  mysql> show engines;
+  # 查看已有表的存储引擎
+  mysql> show create table 表名;
+  # 创建表指定
+  create table 表名(...)engine=MyISAM;
+  # 已有表指定
+  alter table 表名 engine=InnoDB;
+  ```
 
 * **常用存储引擎特点** 
 
   **InnoDB**		
 
   ```mysql
-  1. 支持行级锁,仅对指定的记录进行加锁，这样其它进程还是可以对同一个表中的其它记录进		行操作。
-  2. 支持外键、事务、事务回滚
-  3. 表字段和索引同存储在一个文件中
-  		 1. 表名.frm ：表结构
-   		 2. 表名.ibd : 表记录及索引文件
+  # 支持行级锁,仅对指定的记录进行加锁，这样其它进程还是可以对同一个表中的其它记录进		行操作。
+  # 支持外键、事务、事务回滚
+  # 表字段和索引同存储在一个文件中
+  # 表名.frm ：表结构
+  # 表名.ibd : 表记录及索引文件
   ```
 
   **MyISAM**
 
   ```sql
-  1. 支持表级锁,在锁定期间，其它进程无法对该表进行写操作。如果你是写锁，则其它进程则		读也不允许
-  2.  表字段和索引分开存储
-        	 1. 表名.frm ：表结构
-           2. 表名.MYI : 索引文件(my index)
-           3. 表名.MYD : 表记录(my data)
+  # 支持表级锁,在锁定期间，其它进程无法对该表进行写操作。如果你是写锁，则其它进程则		读也不允许
+  # 表字段和索引分开存储
+  # 表名.frm ：表结构
+  # 表名.MYI : 索引文件(my index)
+  # 表名.MYD : 表记录(my data)
   ```
-
-  
 
 * **如何选择存储引擎**
 
@@ -2683,43 +2657,31 @@ DROP {PROCEDURE | FUNCTION} [IF EXISTS] sp_name
   1. 执行查操作多的表用 MyISAM(使用InnoDB浪费资源)
   2. 执行写操作多的表用 InnoDB
   
-   	CREATE TABLE tb_stu(
-   	id int(11) NOT NULL AUTO_INCREMENT,
-   	name varchar(30) DEFAULT NULL,
-   	sex varchar(2) DEFAULT NULL,
-   	PRIMARY KEY (id)
-   	)ENGINE=MyISAM;
+  CREATE TABLE tb_stu(id int(11) NOT NULL AUTO_INCREMENT,
+                      name varchar(30) DEFAULT NULL,
+                      sex varchar(2) DEFAULT NULL,
+                      PRIMARY KEY (id)
+                     )ENGINE=MyISAM;
   ```
 
-
-
-#### 3.11.3 字段数据类型选择
+#### 3.11.2 字段数据类型选择
 
 - 优先程度   数字 >  时间日期 > 字符串
 - 同一级别   占用空间小的 > 占用空间多的
-
-```
-字符串在查询比较排序时数据处理慢
-占用空间少，数据库占磁盘页少，读写处理就更快
-```
-
+- 少于50字节  char  >  varchar
 - 对数据存储精确不要求 float > decimal
 - 如果很少被查询可以用 TIMESTAMP（时间戳实际是整形存储）
 
-
-
-#### 3.11.4 键的设置
+#### 3.11.3 键的设置
 
 - Innodb如果不设置主键也会自己设置隐含的主键，所以最好自己设置
 - 尽量设置占用空间小的字段为主键
 - 外键的设置用于保持数据完整性，但是会降低数据导入和操作效率，特别是高并发情况下，而且会增加维护成本
 - 虽然高并发下不建议使用外键约束，但是在表关联时建议在关联键上建立索引，以提高查找速度
 
+#### 3.11.4 explain语句
 
-
-#### 3.11.5 explain语句
-
-使用 EXPLAIN 关键字可以模拟优化器执行SQL查询语句，从而知道MySQL是如何处理你的SQL语句的。这可以帮你分析你的查询语句或是表结构的性能瓶颈。通过explain命令可以得到:
+​	使用 EXPLAIN 关键字可以模拟优化器执行SQL查询语句，从而知道MySQL是如何处理你的SQL语句的。这可以帮你分析你的查询语句或是表结构的性能瓶颈。通过explain命令可以得到:
 
 -  表的读取顺序
 -  数据读取操作的操作类型
@@ -2732,23 +2694,21 @@ DROP {PROCEDURE | FUNCTION} [IF EXISTS] sp_name
 explain select * from class_1 where id <5;
 ```
 
-
-
 EXPLAIN主要字段解析：
 
 * table：显示这一行的数据是关于哪张表的
 
 * type：这是最重要的字段之一，显示查询使用了何种类型。从最好到最差的连接类型为system、const、eq_reg、ref、range、index和ALL，一般来说，得保证查询至少达到range级别，最好能达到ref。
 
-```
-type中包含的值：
-- system、const： 可以将查询的变量转为常量. 如id=1; id为 主键或唯一键.
-- eq_ref： 访问索引,返回某单一行的数据.(通常在联接时出现，查询使用的索引为主键或唯一键)
-- ref： 访问索引,返回某个值的数据.(可以返回多行) 通常使用=时发生 
-- range： 这个连接类型使用索引返回一个范围中的行，比如使用>或<查找东西，并且该字段上建有索引时发生的情况
-- index： 以索引的顺序进行全表扫描，优点是不用排序,缺点是还要全表扫描 
-- ALL： 全表扫描，应该尽量避免
-```
+  ```sql
+  type中包含的值：
+  - system、const： 可以将查询的变量转为常量. 如id=1; id为 主键或唯一键.
+  - eq_ref： 访问索引,返回某单一行的数据.(通常在联接时出现，查询使用的索引为主键或唯一键)
+  - ref： 访问索引,返回某个值的数据.(可以返回多行) 通常使用=时发生 
+  - range： 这个连接类型使用索引返回一个范围中的行，比如使用>或<查找东西，并且该字段上建有索引时发生的情况
+  - index： 以索引的顺序进行全表扫描，优点是不用排序,缺点是还要全表扫描 
+  - ALL： 全表扫描，应该尽量避免
+  ```
 
 * possible_keys：显示可能应用在这张表中的索引。如果为空，表示没有可能应用的索引。
 
@@ -2758,9 +2718,7 @@ type中包含的值：
 
 * rows：MySQL认为必须检索的用来返回请求数据的行数
 
-
-
-#### 3.11.6 SQL优化
+#### 3.11.5 SQL优化
 
 - 尽量选择数据类型占空间少，在where ，group by，order by中出现的频率高的字段建立索引
 
@@ -2772,9 +2730,9 @@ type中包含的值：
 
 - 单条查询最后添加 LIMIT 1，停止全表扫描
 
-- where子句中不使用 != ,否则放弃索引全表扫描
+- where子句中不使用 != ，否则放弃索引全表扫描
 
-- 尽量避免 NULL 值判断,否则放弃索引全表扫描
+- 尽量避免 NULL 值判断，否则放弃索引全表扫描
 
   优化前：select number from t1 where number is null;
 
@@ -2794,15 +2752,11 @@ type中包含的值：
 
   优化后：select id from t1 where id between 1 and 4;
 
+#### 3.11.6 表的拆分
 
+​	垂直拆分 ： 表中列太多，分为多个表，每个表是其中的几个列。将常查询的放到一起，blob或者text类型字段放到另一个表
 
-#### 3.11.7 表的拆分
-
-垂直拆分 ： 表中列太多，分为多个表，每个表是其中的几个列。将常查询的放到一起，blob或者text类型字段放到另一个表
-
-水平拆分 ： 减少每个表的数据量，通过关键字进行划分然后拆成多个表
-
-
+​	水平拆分 ： 减少每个表的数据量，通过关键字进行划分然后拆成多个表
 
 ### 3.12 数据库备份和用户管理
 
