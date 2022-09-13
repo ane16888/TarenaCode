@@ -1,0 +1,14 @@
+#last{
+    font_size:1000px;
+    color:aqua
+}
+.red{
+    background-color:red;
+    color:white
+}
+.center{
+    text-align:center;
+}
+p.red,#last,.center{
+
+}
